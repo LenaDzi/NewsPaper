@@ -1,0 +1,155 @@
+1.	Создать двух пользователей (с помощью метода User.objects.create_user('username')).
+>>> us1 = User.objects.create_user(username='Varlamov')
+>>> us2 = User.objects.create_user(username='Gorin')
+
+
+2. Создать два объекта модели Author, связанные с пользователями.
+
+Author.objects.create(authorUser=us1)
+Author.objects.create(authorUser=us2)
+
+
+3. Добавить 4 категории в модель Category.
+
+>>> Category.objects.create(name = 'Sport')      
+<Category: Category object (1)>
+>>> Category.objects.create(name = 'Pogoda')  
+<Category: Category object (2)>
+>>> Category.objects.create(name = 'Rabota')  
+<Category: Category object (3)>
+>>> Category.objects.create(name = 'Novosti')  
+<Category: Category object (4)>
+
+4. Добавить 2 статьи и 1 новость.
+
+>>> Post.objects.create(author=author, categoryType='AR', title = 'Futbol FIFA', text ='V Katare prohodit chrmpionat mira po futbolu')      
+<Post: Post object (4)>
+>>> Post.objects.create(author=author, categoryType='NW', title = 'Opasnyi uragan', text ='Uragan Karina prines znachitelnye rszrusheniya')  
+<Post: Post object (5)>
+>>> Post.objects.create(author=author, categoryType='AR', title = 'Muzey izvestnogo cheloveka', text ='Muzey byl otkryt dlya znakomstva s kulturoy')      
+<Post: Post object (6)>
+
+
+<Post: Post object (4)>
+>>> Post.objects.get(id=4)
+<Post: Post object (4)>
+>>> Post.objects.get(id=4).title
+'Futbol FIFA''
+
+5. Присвоить им категории (как минимум в одной статье/новости должно быть не меньше 2 категорий).
+
+>>> Post.objects.get(id=4).postCategory.add(Category.objects.get(id=1)) 
+>>> Post.objects.get(id=5).postCategory.add(Category.objects.get(id=2))   
+>>> Post.objects.get(id=6).postCategory.add(Category.objects.get(id=4))  
+>>> Post.objects.get(id=5).postCategory.add(Category.objects.get(id=4))
+
+6. Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий).
+
+>> Comment.objects.create(commentPost = Post.objects.get(id=4), commentUser = Author.objects.get(id=1).authorUser, text = 'any text by author')
+<Comment: Comment object (1)>
+>>> Comment.objects.create(commentPost = Post.objects.get(id=5), commentUser = Author.objects.get(id=1).authorUser, text = 'sozdaem komentariy 1')  
+<Comment: Comment object (2)>
+>>> Comment.objects.create(commentPost = Post.objects.get(id=5), commentUser = Author.objects.get(id=2).authorUser, text = 'sozdaem komentariy 2')  
+<Comment: Comment object (3)>
+>>> Comment.objects.create(commentPost = Post.objects.get(id=6), commentUser = Author.objects.get(id=2).authorUser, text = 'sozdaem komentariy 3') 
+<Comment: Comment object (4)>
+>>> Comment.objects.create(commentPost = Post.objects.get(id=6), commentUser = Author.objects.get(id=1).authorUser, text = 'sozdaem komentariy 4')   
+<Comment: Comment object (5)>
+
+
+7. Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+>>> Comment.objects.get(id=4).like()  
+>>> Comment.objects.get(id=4).like()  
+>>> Comment.objects.get(id=4).like()   
+>>> Comment.objects.get(id=4).like()  
+>>> Comment.objects.get(id=4).like()  
+>>> Comment.objects.get(id=5).like()    
+>>> Comment.objects.get(id=5).like()
+>>> Comment.objects.get(id=5).like()
+>>> Comment.objects.get(id=5).like()
+>>> Comment.objects.get(id=5).like()
+>>> Comment.objects.get(id=6).like()  
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=2).like()  
+>>> Comment.objects.get(id=1).dislike()
+>>> Comment.objects.get(id=1).dislike()
+>>> Comment.objects.get(id=2).dislike()  
+>>> Comment.objects.get(id=3).dislike()    
+>>> Comment.objects.get(id=4).dislike()  
+>>> Comment.objects.get(id=4).dislike()
+>>> Comment.objects.get(id=5).dislike() 
+>>> Post.objects.get(id=4).like()  
+>>> Post.objects.get(id=4).like()
+>>> Post.objects.get(id=4).like()
+>>> Post.objects.get(id=4).like()
+>>> Post.objects.get(id=5).like()  
+>>> Post.objects.get(id=5).like()
+>>> Post.objects.get(id=5).like()
+>>> Post.objects.get(id=5).like()
+>>> Post.objects.get(id=5).like()
+>>> Post.objects.get(id=6).like()  
+>>> Post.objects.get(id=6).like() 
+>>> Post.objects.get(id=4).dislike()  
+>>> Post.objects.get(id=5).dislike()  
+>>> Post.objects.get(id=5).dislike() 
+>>> Post.objects.get(id=6).dislike()  
+
+
+8. Обновить рейтинги пользователей.
+
+>>> Comment.objects.get(id=1).rating    
+5
+>>> Comment.objects.get(id=2).rating  
+0
+>>> Comment.objects.get(id=3).rating  
+-1
+>>> Comment.objects.get(id=4).rating  
+3
+
+>>> a = Author.objects.get(id=1)
+>>> a.update_rating()
+>>> a.ratingAuthor
+30
+
+
+
+9. Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
+
+>>> a = Author.objects.order_by('-ratingAuthor')[:1].values('authorUser__username', 'ratingAuthor')
+>>> a
+<QuerySet [{'authorUser__username': 'Mikle Djekson', 'ratingAuthor': 30}]>
+>>>
+
+Выводим автора с самым большим рейтингом:
+>>> for i in a:
+...     i.ratingAuthor
+...     i.authorUser.username
+... 
+30
+'Mikle Djekson'
+
+10. Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
+
+>>> best_post = Post.objects.order_by('-rating')[0]
+>>> best_post.dataCreation.strftime('%d-%m-%Y %H:%M:%S') 
+'14-12-2022 18:34:17'
+
+>>>Post.objects.order_by('-rating').values('author__authorUser__username', 'rating', 'title')[0]                                                                  
+{'author__authorUser__username': 'Mikle Djekson', 'rating': 3, 'title': 'Futbol FIFA'}
+
+>>> best_post.preview()
+'V Katare prohodit chrmpionat mira po futbolu...'
+
+11. Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+
+>>> best_comment = Comment.objects.get(commentPost=best_post)
+>>> best_comment.dataCreation.strftime('%d-%m-%Y %H:%M:%S')
+'14-12-2022 18:56:09'
+Comment.objects.filter(commentPost=best_post).values('commentUser__username', 'rating', 'commentUser') 
+<QuerySet [{'commentUser__username': 'Mikle Djekson', 'rating': 5, 'commentUser': 6}]>
