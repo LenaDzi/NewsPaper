@@ -1,0 +1,49 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'default.html' %}
+<!-- подключение фильтра -->
+{% load custom_filters %}
+<!-- Подключаем новый файл с нашим тегом -->
+{% load custom_tags %}
+
+{% block title %}
+NEWS
+{% endblock title %}
+
+{% block content %}
+   <h1>Все новости</h1>
+   <!-- Вот так выглядело использование переменной и фильтра -->
+   <!-- <h3>{{ time_now|date:'M d Y' }}</h3> -->
+   <!-- А вот так мы используем наш тег-->
+   <h3>{% current_time '%b %d %Y' %}</h3>
+   <h3> Количество доступных статей и новостей: </h3> <h3>{{ posts|length }}</h3>
+    <h3> {{ next_Post|default_if_none:"Позже сообщим о свежих новостях!" }} </h3>
+   <hr>
+
+    {% if posts %}
+       <table>
+           <tr>
+               <td>Категория</td>
+               <td>Название</td>
+               <td>Текст</td>
+               <td>Дата публикации</td>
+
+           </tr>
+
+           {% for post in posts %}
+           <tr>
+              <td>
+                  {% for category in post.postCategory.all %}
+                        {{ category.name }}</td>
+                  {% endfor %}
+               <td>{{ post.title| censor| truncatechars:15 }}</td>
+              <td>{{post.text|censor|truncatechars:20}} </td>
+               <td>{{ post.dataCreation | date:'d M. Y H ' }}</td>
+
+           </tr>
+           {% endfor %}
+
+       </table>
+   {% else %}
+       <h2> Свежих новостей нет! </h2>
+   {% endif %}
+{% endblock content %}

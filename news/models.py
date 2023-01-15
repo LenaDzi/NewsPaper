@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.urls import reverse
+from django.core.cache import cache
 
 
 class Author(models.Model):
@@ -19,8 +21,15 @@ class Author(models.Model):
         self.ratingAuthor = pRat*3 + cRat
         self.save()
 
+    def __str__(self):
+        return f'{self.authorUser}'
+
 class Category(models.Model):
     name = models.CharField(max_length=64, unique=True)
+    subscribers = models.ManyToManyField(User, related_name='categories')
+
+    def __str__(self):
+        return f'{self.name}'
 
 class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
@@ -48,11 +57,24 @@ class Post(models.Model):
     def preview(self):
         return self.text[0:123] + '...'
 
+    def __str__(self):
+        return '{}'.format(self.title)
+
+    def get_absolute_url(self):
+        return reverse('show_post', args=[str(self.id)])
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # вызываем метод родителя, чтобы объект сохранился
+        cache.delete(f'Post-{self.pk}')  # затем удаляем его из кэша, чтобы сбросить его
+
 class PostCategory(models.Model):
     postThrough = models.ForeignKey(Post, on_delete=models.CASCADE)
     categoryThrough = models.ForeignKey(Category, on_delete=models.CASCADE)
 
-class Comment(models.Model):
+    def __str__(self):
+        return f'{self.postThrough, self.categoryThrough}'
+
+class Comments(models.Model):
     commentPost = models.ForeignKey(Post, on_delete=models.CASCADE)
     commentUser = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
@@ -66,3 +88,6 @@ class Comment(models.Model):
     def dislike(self):
         self.rating -= 1
         self.save()
+
+    def __str__(self):
+        return f'{self.commentUser, self.commentPost}'

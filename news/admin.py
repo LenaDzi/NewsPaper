@@ -1,3 +1,11 @@
 from django.contrib import admin
+from .models import Author, Category, Post, PostCategory, Comments
 
-# Register your models here.
+admin.site.register(Author)
+admin.site.register(Post)
+admin.site.register(Category)
+admin.site.register(PostCategory)
+admin.site.register(Comments)
+
+# регистрация моделей, что бы увидеть их в панели администрарора
+
