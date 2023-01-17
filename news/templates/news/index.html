@@ -35,9 +35,10 @@ NEWS
                   {% for category in post.postCategory.all %}
                         {{ category.name }}</td>
                   {% endfor %}
-               <td>{{ post.title| censor| truncatechars:15 }}</td>
-              <td>{{post.text|censor|truncatechars:20}} </td>
+               <td>{{ post.title|censor| truncatechars:15 }}</td>
+               <td>{{ post.text|censor }}</td>
                <td>{{ post.dataCreation | date:'d M. Y H ' }}</td>
+
 
            </tr>
            {% endfor %}
