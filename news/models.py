@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
+#from django.core.validators import MinValueValidator
 from django.urls import reverse
 from django.core.cache import cache
 
@@ -61,7 +62,7 @@ class Post(models.Model):
         return '{}'.format(self.title)
 
     def get_absolute_url(self):
-        return reverse('show_post', args=[str(self.id)])
+        return reverse('post_detail', args=[str(self.id)])
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  # вызываем метод родителя, чтобы объект сохранился
