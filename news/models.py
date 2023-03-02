@@ -4,6 +4,9 @@ from django.db.models import Sum
 #from django.core.validators import MinValueValidator
 from django.urls import reverse
 from django.core.cache import cache
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django import forms
 
 
 class Author(models.Model):
@@ -92,3 +95,4 @@ class Comments(models.Model):
 
     def __str__(self):
         return f'{self.commentUser, self.commentPost}'
+

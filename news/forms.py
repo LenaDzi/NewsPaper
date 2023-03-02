@@ -1,7 +1,11 @@
 from django import forms
+from django.contrib.auth.forms import UserChangeForm
 from django.core.exceptions import ValidationError
 
 from .models import Post
+from .models import User
+from allauth.account.forms import SignupForm
+from django.contrib.auth.models import Group
 
 
 class PostForm(forms.ModelForm):
@@ -9,7 +13,7 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = [
             'author',
-            #'categoryType',
+            'categoryType',
             'title',
             'text',
             'postCategory',
@@ -24,3 +28,20 @@ class PostForm(forms.ModelForm):
             })
 
         return cleaned_data
+
+class ProfileUpdateForm(UserChangeForm):
+    password = None
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', ]
+
+
+class CommonSignupForm(SignupForm):
+
+    def save(self, request):
+        user = super(CommonSignupForm, self).save(request)
+        common_group = Group.objects.get(name='common')
+        common_group.user_set.add(user)
+        return user
+
