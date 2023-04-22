@@ -134,3 +134,34 @@ def upgrade_user(request):
         group.user_set.add(user)
         Author.objects.create(authorUser=User.objects.get(pk=user.id))
     return redirect('/')
+
+class CategoryList(ListView):
+    model = Post
+    template_name = 'news/category_list.html'
+    context_object_name = 'category_news_list'
+
+
+    def get_queryset(self):  # фильтрация по категории
+        # выдаст ошибку 404, если категории не существует
+        self.postCategory = get_object_or_404(Category, id=self.kwargs['pk'])
+        queryset = Post.objects.filter(postCategory=self.postCategory).order_by('dataCreation')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_subscribe'] = self.request.user not in self.postCategory.subscribers.all()
+        context['category'] = self.postCategory
+        return context
+
+#подписка на категорию
+@login_required
+def subscribe(request, pk):
+    user = request.user
+    category = Category.objects.get(id=pk)
+    category.subscribers.add(user)
+
+    massage = "Вы успешно подписались на рассылку"
+
+    return render(request, 'news/subscribe.html', {'category': Category, 'massage': massage})
+
+

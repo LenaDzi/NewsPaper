@@ -1,26 +1,25 @@
-<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'default.html' %}
-<!-- подключение фильтра -->
+
 {% load custom_filters %}
-<!-- Подключаем новый файл с нашим тегом -->
+
 {% load custom_tags %}
 
 {% block title %}
-NEWS
+Catigories
 {% endblock title %}
 
 {% block content %}
    <h1>Все новости</h1>
-     {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+    {% if is_not_subscribe %}
+        <p class=" text-center"><a href="{% url 'subscribe' category.id %}" class="btn-secondary btn-sm">Подписаться</a></p>
+    {% endif %}
+
+
    <form action="" method="get">
-       {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
        {{ filterset.form.as_p }}
-       {# Добавим кнопку отправки данных формы #}
        <input type="submit" value="Найти" />
    </form>
-   <!-- Вот так выглядело использование переменной и фильтра -->
-   <!-- <h3>{{ time_now|date:'M d Y' }}</h3> -->
-   <!-- А вот так мы используем наш тег-->
+
    <h3>{% current_time '%b %d %Y' %}</h3>
    <h3> Количество доступных статей и новостей: </h3> <h3>{{ posts|length }}</h3>
     <h3> {{ next_Post|default_if_none:"Позже сообщим о свежих новостях!" }} </h3>
@@ -31,7 +30,6 @@ NEWS
             <button>
             <a class="nav-link" href="{% url 'upgrade' %}">
             <h4><strong>Стать автором!</strong></h4>
-            </a>
             </button>
             </td>
         </tr>
@@ -46,11 +44,11 @@ NEWS
 
            </tr>
 
-           {% for post in posts %}
+           {% for post in category_news_list %}
            <tr>
               <td>
                   {% for category in post.postCategory.all %}
-                    <a href="{% url 'category_list' category.id %}">{{ category.name }}</a>
+                        <a href="{% url 'category_list' category.id %}">{{ category.name }}</a>
               </td>
                   {% endfor %}
               <td>{{ post.title|censor| truncatechars:15 }}</td>
